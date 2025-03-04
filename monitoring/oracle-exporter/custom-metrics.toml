@@ -1,0 +1,43 @@
+[[metric]]
+context = "active_sessions"
+metricsdesc = { active_sessions = "Số phiên kết nối đồng thời đến Oracle" }
+request = "SELECT COUNT(*) as active_sessions FROM v$session WHERE status='ACTIVE'"
+
+# 2. DB Query Execution Time - Thời gian thực thi truy vấn SQL
+[[metric]]
+context = "query_time"
+labels = ["sql_id"]
+metricsdesc = { elapsed_seconds = "Thời gian thực thi truy vấn SQL" }
+request = "SELECT sql_id, elapsed_time/1000000 as elapsed_seconds FROM v$sql ORDER BY elapsed_time DESC FETCH FIRST 10 ROWS ONLY"
+
+# 3. DB IOPS - Hiệu suất đọc/ghi của Oracle DB
+[[metric]]
+context = "iops"
+metricsdesc = { iops_total = "Hiệu suất đọc/ghi của Oracle DB" }
+request = "SELECT SUM(phyrds + phywrts) as iops_total FROM v$filestat"
+
+# 4. DB Wait Time - Thời gian chờ xử lý trong Oracle
+[[metric]]
+context = "wait_time"
+labels = ["event"]
+metricsdesc = { wait_count = "Thời gian chờ xử lý trong Oracle" }
+request = "SELECT event, COUNT(*) as wait_count FROM v$session_wait GROUP BY event"
+
+# 5. DB Connection Pool Usage - Tỷ lệ sử dụng connection pool
+[[metric]]
+context = "connection_pool"
+metricsdesc = { pool_usage = "Tỷ lệ sử dụng connection pool" }
+request = "SELECT resource_name, current_utilization, max_utilization, limit_value FROM v$resource_limit WHERE resource_name = 'processes'"
+
+# 6. Lock Waits & Deadlocks - Tình trạng chờ và khóa chết trong Oracle
+[[metric]]
+context = "locks"
+labels = ["event"]
+metricsdesc = { lock_count = "Tình trạng chờ và khóa chết trong Oracle" }
+request = "SELECT event, COUNT(*) as lock_count FROM v$session_wait GROUP BY event"
+
+# 7. Transaction Commit/Rollback Rate - Tỷ lệ giao dịch thành công/thất bại
+[[metric]]
+context = "transactions"
+metricsdesc = { transaction_count = "Tỷ lệ giao dịch thành công/thất bại" }
+request = "SELECT COUNT(*) as transaction_count FROM v$transaction"

@@ -1,0 +1,47 @@
+- name: active_sessions
+  query: "SELECT COUNT(*) AS active_sessions_count FROM v$session WHERE status = 'ACTIVE'"
+  help: "Number of active sessions in Oracle DB"
+  type: gauge
+
+- name: query_execution_time
+  query: "SELECT elapsed_time / 1000000 AS query_execution_time FROM v$sql ORDER BY elapsed_time DESC FETCH FIRST 10 ROWS ONLY"
+  help: "Execution time of SQL queries in seconds"
+  type: gauge
+
+- name: iops
+  query: "SELECT SUM(phyrds) AS physical_reads, SUM(phywrts) AS physical_writes FROM v$filestat"
+  help: "IOPS metrics for physical reads and writes"
+  metrics:
+    - name: physical_reads
+      type: counter
+      help: "Physical reads from datafiles"
+    - name: physical_writes
+      type: counter
+      help: "Physical writes to datafiles"
+
+- name: wait_time
+  query: "SELECT event, COUNT(*) AS wait_time_seconds FROM v$session_wait GROUP BY event"
+  help: "Wait time in seconds by wait class"
+  type: gauge
+  labels:
+    - event
+
+- name: connection_pool
+  query: "SELECT resource_name, current_utilization, max_utilization, limit_value FROM v$resource_limit WHERE resource_name = 'processes'"
+  help: "Connection pool usage metrics"
+  metrics:
+    - name: pool_usage_percent
+      type: gauge
+      help: "Percentage of connection pool used"
+
+- name: lock_waits_deadlocks
+  query: "SELECT event, COUNT(*) AS lock_waits_deadlocks FROM v$session_wait WHERE event LIKE '%lock%' GROUP BY event"
+  help: "Status of wait and deadlock in Oracle"
+  type: gauge
+  labels:
+    - event
+
+- name: transactions
+  query: "SELECT COUNT(*) AS transactions_count FROM v$transaction"
+  help: "Number of active transactions"
+  type: gauge
