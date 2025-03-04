@@ -1,0 +1,66 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+  oracle-exporter:
+    image: iamseth/oracledb_exporter:latest
+    container_name: oracle-exporter
+    environment:
+      - DATA_SOURCE_NAME=c##hieu/hieu@host.docker.internal:1521/FREE
+      - CUSTOM_METRICS=/etc/oracledb_exporter/custom-metrics.toml
+    volumes:
+      - ./oracle-exporter/custom-metrics.toml:/etc/oracledb_exporter/custom-metrics.toml
+    command:
+      - --log.level=debug
+      - --web.listen-address=:9161
+      - --custom.metrics=/etc/oracledb_exporter/custom-metrics.toml
+    ports:
+      - "9161:9161"
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+    depends_on:
+      - prometheus
+
+networks:
+  monitoring_network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
