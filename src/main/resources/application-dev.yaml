@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:oracle:thin:@localhost:1521:FREE
-    username: c##b
+    username: c##hieu
     password: hieu
     driver-class-name: oracle.jdbc.OracleDriver
     hikari:
