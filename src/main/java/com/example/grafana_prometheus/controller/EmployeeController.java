@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
-//@Tag(name="Employee")
+@Tag(name="Employee")
 public class EmployeeController {
 
 
@@ -28,22 +28,22 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-//    @Operation(
-//            description = "Get endpoint for employee",
-//            summary = "This is a summary for employee ",
-//            responses = {
-//                    @ApiResponse(
-//                            description = "Success",
-//                            responseCode = "200"
-//
-//                    ),
-//                    @ApiResponse(
-//                            description = "Not Found",
-//                            responseCode = "404"
-//
-//                    )
-//            }
-//    )
+    @Operation(
+            description = "Get endpoint for employee",
+            summary = "This is a summary for employee ",
+            responses = {
+                    @ApiResponse(
+                            description = "Success",
+                            responseCode = "200"
+
+                    ),
+                    @ApiResponse(
+                            description = "Not Found",
+                            responseCode = "404"
+
+                    )
+            }
+    )
 
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
