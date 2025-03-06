@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:oracle:thin:@localhost:1521:FREE
     username: c##hieu
-    password: hieu
+    password:
     driver-class-name: oracle.jdbc.OracleDriver
     hikari:
       maximum-pool-size: 10
